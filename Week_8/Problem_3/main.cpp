@@ -22,6 +22,7 @@ int main(){
 			
 			if(j == oldStr.size()){
 				pos = start;
+				break;
 			}
 		}
 		

@@ -1,0 +1,253 @@
+CREATE TABLE University (
+    university_id INT PRIMARY KEY,
+    university_name VARCHAR(100) NOT NULL,
+    location VARCHAR(50) NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    established_year INT
+);
+
+------------------------------------------------------
+
+CREATE TABLE Department (
+    department_id INT PRIMARY KEY,
+    university_id INT NOT NULL,
+    department_name VARCHAR(100) NOT NULL,
+    office_location VARCHAR(100),
+    hod_name VARCHAR(100),
+    FOREIGN KEY (university_id) REFERENCES University(university_id)
+);
+
+------------------------------------------------------
+
+CREATE TABLE Program (
+    program_id INT PRIMARY KEY,
+    department_id INT NOT NULL,
+    program_name VARCHAR(100) NOT NULL,
+    program_level VARCHAR(50),
+    duration_years INT,
+    FOREIGN KEY (department_id) REFERENCES Department(department_id)
+);
+
+------------------------------------------------------
+
+CREATE TABLE Course (
+    course_id INT PRIMARY KEY,
+    program_id INT NOT NULL,
+    course_name VARCHAR(100) NOT NULL,
+    course_code VARCHAR(20) NOT NULL,
+    credits INT,
+    FOREIGN KEY (program_id) REFERENCES Program(program_id)
+);
+
+------------------------------------------------------
+
+CREATE TABLE Syllabus (
+    syllabus_id INT PRIMARY KEY,
+    course_id INT NOT NULL,
+    semester INT NOT NULL,
+    academic_year VARCHAR(20),
+    syllabus_details VARCHAR(100),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id)
+);
+
+------------------------------------------------------
+
+CREATE TABLE Faculty (
+    faculty_id INT PRIMARY KEY,
+    department_id INT NOT NULL,
+    faculty_name VARCHAR(100) NOT NULL,
+    specialization VARCHAR(100),
+    email VARCHAR(100),
+    FOREIGN KEY (department_id) REFERENCES Department(department_id)
+);
+
+------------------------------------------------------
+
+CREATE INDEX idx_university_location
+ON University(location);
+
+------------------------------------------------------
+
+CREATE INDEX idx_department_university
+ON Department(university_id);
+
+------------------------------------------------------
+
+CREATE INDEX idx_program_department
+ON Program(department_id);
+
+------------------------------------------------------
+
+CREATE INDEX idx_course_program
+ON Course(program_id);
+
+------------------------------------------------------
+
+CREATE INDEX idx_syllabus_course
+ON Syllabus(course_id);
+
+------------------------------------------------------
+
+CREATE INDEX idx_faculty_specialization
+ON Faculty(specialization);
+
+------------------------------------------------------
+
+INSERT INTO University VALUES
+(1, 'Aligarh Muslim University', 'Aligarh', 'Uttar Pradesh', 1920),
+(2, 'Jawaharlal Nehru University', 'New Delhi', 'Delhi', 1969),
+(3, 'University of Delhi', 'Delhi', 'Delhi', 1922),
+(4, 'University of Jammu', 'Jammu', 'Jammu and Kashmir', 1969),
+(5, 'Banaras Hindu University', 'Varanasi', 'Uttar Pradesh', 1916);
+
+------------------------------------------------------
+
+
+INSERT INTO Department VALUES
+(101, 1, 'Computer Science', 'Computer Science Building', 'Dr. A. Khan'),
+(102, 2, 'Computer Science', 'School of Computer Sciences', 'Dr. R. Sharma'),
+(103, 3, 'Computer Science', 'North Campus', 'Dr. P. Mehta'),
+(104, 4, 'Computer Science', 'Science Block', 'Dr. S. Gupta'),
+(105, 5, 'Computer Science', 'Computer Centre', 'Dr. N. Singh');
+
+------------------------------------------------------
+
+INSERT INTO Program VALUES
+(201, 101, 'MCA', 'Postgraduate', 2),
+(202, 102, 'MCA', 'Postgraduate', 2),
+(203, 103, 'BCA', 'Undergraduate', 3),
+(204, 104, 'MCA', 'Postgraduate', 2),
+(205, 105, 'MSc Computer Science', 'Postgraduate', 2);
+
+------------------------------------------------------
+
+INSERT INTO Course VALUES
+(301, 201, 'Computer Architecture', 'MCA101', 4),
+(302, 202, 'Computer Architecture', 'MCA201', 4),
+(303, 203, 'Database Management Systems', 'BCA301', 4),
+(304, 204, 'Computer Architecture', 'MCA401', 4),
+(305, 205, 'Information Security', 'MSC501', 3);
+
+------------------------------------------------------
+
+INSERT INTO Syllabus VALUES
+(401, 301, 1, '2026-2027', 'CPU organization, memory and instruction sets'),
+(402, 302, 1, '2026-2027', 'Processor design and computer organization'),
+(403, 303, 3, '2026-2027', 'Relational database concepts and SQL'),
+(404, 304, 1, '2026-2027', 'Digital logic, CPU and memory architecture'),
+(405, 305, 2, '2026-2027', 'Security principles and cryptography');
+
+------------------------------------------------------
+
+INSERT INTO Faculty VALUES
+(501, 101, 'Dr. Aamir Khan', 'Information Security', 'aamir@amu.ac.in'),
+(502, 102, 'Dr. Ritu Sharma', 'Artificial Intelligence', 'ritu@jnu.ac.in'),
+(503, 103, 'Dr. Pooja Mehta', 'Information Security', 'pooja@du.ac.in'),
+(504, 104, 'Dr. Sameer Gupta', 'Database Systems', 'sameer@jammuuniv.ac.in'),
+(505, 105, 'Dr. Neha Singh', 'Information Security', 'neha@bhu.ac.in');
+
+------------------------------------------------------
+
+SELECT *
+FROM University
+WHERE location = 'Delhi';
+
+------------------------------------------------------
+
+SELECT
+    d.department_id,
+    d.department_name,
+    d.office_location,
+    d.hod_name
+FROM Department d
+JOIN University u
+    ON d.university_id = u.university_id
+WHERE u.university_name = 'Aligarh Muslim University';
+
+------------------------------------------------------
+
+SELECT
+    university_name,
+    location,
+    state
+FROM University
+WHERE university_name = 'Jawaharlal Nehru University';
+
+------------------------------------------------------
+
+SELECT
+    p.program_id,
+    p.program_name,
+    p.program_level,
+    p.duration_years
+FROM Program p
+JOIN Department d
+    ON p.department_id = d.department_id
+JOIN University u
+    ON d.university_id = u.university_id
+WHERE u.university_name = 'University of Jammu';
+
+------------------------------------------------------
+
+SELECT DISTINCT
+    u.university_id,
+    u.university_name,
+    u.location
+FROM University u
+JOIN Department d
+    ON u.university_id = d.university_id
+JOIN Program p
+    ON d.department_id = p.department_id
+WHERE p.program_name = 'MCA';
+
+------------------------------------------------------
+
+SELECT
+    c.course_id,
+    c.course_name,
+    c.course_code,
+    c.credits
+FROM Course c
+JOIN Program p
+    ON c.program_id = p.program_id
+JOIN Department d
+    ON p.department_id = d.department_id
+JOIN University u
+    ON d.university_id = u.university_id
+WHERE p.program_name = 'MCA'
+AND u.university_name = 'Aligarh Muslim University';
+
+------------------------------------------------------
+
+SELECT
+    f.faculty_name,
+    f.specialization,
+    f.email,
+    u.university_name
+FROM Faculty f
+JOIN Department d
+    ON f.department_id = d.department_id
+JOIN University u
+    ON d.university_id = u.university_id
+WHERE f.specialization = 'Information Security';
+
+------------------------------------------------------
+
+SELECT
+    u.university_name,
+    c.course_name,
+    s.semester,
+    s.academic_year,
+    s.syllabus_details
+FROM Syllabus s
+JOIN Course c
+    ON s.course_id = c.course_id
+JOIN Program p
+    ON c.program_id = p.program_id
+JOIN Department d
+    ON p.department_id = d.department_id
+JOIN University u
+    ON d.university_id = u.university_id
+WHERE c.course_name = 'Computer Architecture';
+
+

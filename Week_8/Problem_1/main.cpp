@@ -17,6 +17,7 @@ string insertString(string mainString, string givenString, int pos){
 	return result;
 }
 
+
 string deleteString(string mainString, int n, int pos){
 	string result = "";
 	for(int i = 0; i<mainString.length() ; i++){

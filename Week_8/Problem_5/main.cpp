@@ -22,6 +22,7 @@ int main(){
 			
 			if(j == T.size()){
 				pos = start;
+				break;
 			}
 		}
 		

@@ -11,6 +11,7 @@ public:
     }
 
     Demo* getObject(){
+    	cout << "Address = " << this << endl;
         return this;
     }
 
